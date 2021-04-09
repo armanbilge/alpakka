@@ -13,7 +13,7 @@ import java.time.Clock
 import scala.concurrent.duration._
 
 @InternalApi
-private[auth] final case class AccessToken(token: String, expiresAt: Long) {
+private[alpakka] final case class AccessToken(token: String, expiresAt: Long) {
   def expiresSoon(in: FiniteDuration = 1.minute)(implicit clock: Clock): Boolean =
     expiresAt < JwtTime.nowSeconds + in.toSeconds
 }
@@ -24,7 +24,7 @@ private[auth] object AccessToken {
                                clock: Clock): Unmarshaller[T, AccessToken] =
     unmarshaller.map {
       case AccessTokenResponse(access_token, _, expires_in) =>
-        AccessToken(access_token, JwtTime.now + expires_in)
+        AccessToken(access_token, JwtTime.nowSeconds + expires_in)
     }
 }
 
